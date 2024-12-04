@@ -1,0 +1,18 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Sucess</title>
+    <link rel="stylesheet" href="{% static 'payments/css/styles.css' %}">
+</head>
+<body>
+    <h1>Payment Successful</h1>
+    <div class="success">
+        <p>Receipt Number: {{ receipt_number }}</p>
+        <a href="{{ download_link }}" download>Download Receipt</a>
+    </div>
+</body>
+</html>

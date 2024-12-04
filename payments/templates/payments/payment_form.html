@@ -1,0 +1,33 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Form</title>
+    <link rel="stylesheet" href="{% static 'payments/css/styles.css' %}">
+</head>
+<body>
+    <h1>Payment Form</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" required>
+
+        <label for="code">Code</label>
+        <input type="text" name="code" id="code" required>
+
+        <label for="amount">Amount:</label>
+        <input type="number" name="amount" id="amount" step="0.01" required>
+
+        <label for="account_number">account_number:</label>
+        <input type="text" name="account_number" id="account_number" required>
+
+        <button type="submit">PAY</button>
+    </form>
+</body>
+</html>
