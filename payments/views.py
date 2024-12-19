@@ -1,15 +1,23 @@
-from django.shortcuts import render
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.auth import login, logout
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Payment
 import random
 import string
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from django.contrib import messages
 import os
+
 
 def generate_receipt_number():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
 
+
+@login_required
 def payment_form(request):
     if request.method == 'POST':
         name = request.POST['name']
@@ -50,3 +58,44 @@ def payment_form(request):
         })
 
     return render(request, 'payments/payment_form.html')
+
+
+def register_view(request):
+    if request.method == 'POST':  # This line checks if the request is a POST request
+        username = request.POST['username']
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+
+        if password != confirm_password:
+            return render(request, 'payments/register.html', {'error': 'Passwords do not match'})
+        
+        if User.objects.filter(username=username).exists():
+            return render(request, 'payments/register.html', {'error': 'Username already exists'})
+
+        user = User.objects.create_user(username=username, password=password)
+        login(request, user)  # Automatically log in the user after registration
+        return redirect('payment_form')  # Redirect to the payment form
+
+    return render(request, 'payments/register.html')
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        from django.contrib.auth import authenticate, login
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, f"Welcome back, {user.username}!")
+            return redirect('payment_form')  # Redirect to payment form after login
+        else:
+            return render(request, 'payments/login.html', {'error': 'Invalid username or password'})
+
+    return render(request, 'payments/login.html')
+
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, "You have been logged out.")
+    return redirect('login')
